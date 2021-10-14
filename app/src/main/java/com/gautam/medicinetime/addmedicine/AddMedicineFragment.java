@@ -1,17 +1,31 @@
 package com.gautam.medicinetime.addmedicine;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.AppCompatSpinner;
+
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -47,6 +62,7 @@ import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.ALARM_SERVICE;
 
 /**
@@ -95,6 +111,9 @@ public class AddMedicineFragment extends Fragment implements AddMedicineContract
     @BindView(R.id.tv_dose_quantity)
     EditText tvDoseQuantity;
 
+    @BindView(R.id.selected_img)
+    ImageView selected_img;
+
     @BindView(R.id.spinner_dose_units)
     AppCompatSpinner spinnerDoseUnits;
 
@@ -112,10 +131,32 @@ public class AddMedicineFragment extends Fragment implements AddMedicineContract
 
     private String doseUnit;
 
+    //image picked will be saved in this
+    Uri image_rui=null;
+
+    //permission constants
+    private static final int CAMERA_REQUEST_CODE =100;
+    private static final int STORAGE_REQUEST_CODE =200;
+
+
+    //permission constants
+    private static final int IMAGE_PICK_CAMERA_CODE =300;
+    private static final int IMAGE_PICK_GALLERY_CODE=400;
+
+    //permission array
+    String[] cameraPermessions;
+    String[] storagePermessions;
+
+    //progresses bar
+    ProgressDialog pd;
+
 
     static AddMedicineFragment newInstance() {
         Bundle args = new Bundle();
         AddMedicineFragment fragment = new AddMedicineFragment();
+        //init permissions
+        fragment.cameraPermessions=new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        fragment.storagePermessions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         fragment.setArguments(args);
         return fragment;
     }
@@ -151,8 +192,176 @@ public class AddMedicineFragment extends Fragment implements AddMedicineContract
 
     @Override
     public void showMedicineList() {
-        Objects.requireNonNull(getActivity()).setResult(Activity.RESULT_OK);
+        Objects.requireNonNull(getActivity()).setResult(RESULT_OK);
         getActivity().finish();
+    }
+
+
+    @OnClick(R.id.selected_img)
+    void onSelectImageClick() {
+        showImageDialog();
+    }
+
+    private void showImageDialog() {
+
+        String[] options={"Camera","Gallery"};
+
+        //dialog box
+        AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Choose Action");
+
+
+
+        Toast.makeText(getContext(), " reached", Toast.LENGTH_SHORT).show();
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if(which==0){
+                    //camera clicked
+                    if(!checkCameraPermission()){
+                        requestCameraPermission();
+                    }
+                    else {
+                        pickFromCamera();
+                    }
+                }
+                if(which==1){
+                    //camera clicked
+
+                    if(!checkStoragePermission()){
+                        requestStoragePermission();
+                    }
+                    else {
+                        pickFromGallery();
+                    }
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+
+
+
+    private void pickFromCamera() {
+
+        ContentValues cv=new ContentValues();
+        cv.put(MediaStore.Images.Media.TITLE,"Temp Pick");
+        cv.put(MediaStore.Images.Media.DESCRIPTION,"Temp Descr");
+        image_rui = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,cv);
+
+
+        Intent intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,image_rui);
+        startActivityForResult(intent,IMAGE_PICK_CAMERA_CODE);
+    }
+
+    private void pickFromGallery() {
+
+        Intent intent=new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent,IMAGE_PICK_GALLERY_CODE);
+    }
+
+    private boolean checkStoragePermission(){
+        boolean result = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)==(PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+
+    private void requestStoragePermission(){
+        ActivityCompat.requestPermissions(getActivity(),storagePermessions,STORAGE_REQUEST_CODE);
+    }
+
+    private boolean checkCameraPermission(){
+        boolean result = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)==(PackageManager.PERMISSION_GRANTED);
+        boolean result1 = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)==(PackageManager.PERMISSION_GRANTED);
+
+        return result&&result1;
+    }
+
+
+    private void requestCameraPermission(){
+        ActivityCompat.requestPermissions(getActivity(),cameraPermessions,CAMERA_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case CAMERA_REQUEST_CODE:{
+                if(grantResults.length>0){
+                    boolean cameraAccepted=grantResults[0]== PackageManager.PERMISSION_GRANTED;
+                    boolean storageAccepted=grantResults[1]== PackageManager.PERMISSION_GRANTED;
+
+                    if(cameraAccepted&&storageAccepted){
+
+                        pickFromCamera();
+                    }
+                    else {
+                        Toast.makeText(getContext(), "camera  & gallery both permission needed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            break;
+            case STORAGE_REQUEST_CODE:{
+                if(grantResults.length>1){
+                    boolean storageAccepted=false;
+                    try {
+                        storageAccepted=grantResults[1]== PackageManager.PERMISSION_GRANTED;
+                    }catch (ArrayIndexOutOfBoundsException e){
+                        Toast.makeText(getContext(), ""+e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    if(storageAccepted){
+
+                        pickFromGallery();
+                    }
+                    else {
+                        //Toast.makeText(this, "gallery both permission needed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    boolean storageAccepted=false;
+                    try {
+                        storageAccepted=grantResults[0]== PackageManager.PERMISSION_GRANTED;
+                    }catch (ArrayIndexOutOfBoundsException e){
+                        Toast.makeText(getContext(), ""+e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    if(storageAccepted){
+
+                        pickFromGallery();
+                    }
+                    else {
+                        //Toast.makeText(this, "gallery both permission needed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+            break;
+        }
+
+
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(requestCode==IMAGE_PICK_GALLERY_CODE){
+                image_rui=data.getData();
+
+                selected_img.setImageURI(image_rui);
+            }
+            else if(requestCode==IMAGE_PICK_CAMERA_CODE){
+
+                selected_img.setImageURI(image_rui);
+
+            }
+        }
     }
 
     @Override
@@ -332,6 +541,10 @@ public class AddMedicineFragment extends Fragment implements AddMedicineContract
                 alarm.setAlarmId(alarmId);
                 pill.addAlarm(alarm);
                 mPresenter.saveMedicine(alarm, pill);
+            }
+
+            if (image_rui != null) {
+                Toast.makeText(getContext(), "image: " + image_rui.toString(), Toast.LENGTH_SHORT).show();
             }
 
             List<Long> ids = new LinkedList<>();
