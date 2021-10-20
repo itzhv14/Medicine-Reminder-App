@@ -15,17 +15,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".medicine.MedicineActivity">
+        <activity
+            android:name=".AddPrescriptionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PrescriptionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RegisterAcitvity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- <activity android:name=".MainActivity" /> -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+        <activity android:name=".medicine.MedicineActivity" /> <!-- <activity android:name=".MainActivity" /> -->
         <activity android:name=".addmedicine.AddMedicineActivity" />
         <activity android:name=".alarm.ReminderActivity" />
-        <activity android:name=".report.MonthlyReportActivity"/>
+        <activity android:name=".report.MonthlyReportActivity" />
     </application>
 
 </manifest>
