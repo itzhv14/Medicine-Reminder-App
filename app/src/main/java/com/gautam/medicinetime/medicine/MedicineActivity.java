@@ -1,6 +1,7 @@
 package com.gautam.medicinetime.medicine;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.gautam.medicinetime.PrescriptionActivity;
@@ -134,6 +135,13 @@ public class MedicineActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.menu_prescription) {
             Intent intent = new Intent(this, PrescriptionActivity.class);
             startActivity(intent);
+        }
+        if(item.getItemId() == R.id.menu_location) {
+            // Search for restaurants nearby
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=medical");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
         }
         return super.onOptionsItemSelected(item);
     }

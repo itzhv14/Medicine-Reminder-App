@@ -3,6 +3,7 @@ package com.gautam.medicinetime;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -113,6 +115,10 @@ public class RegisterAcitvity extends AppCompatActivity {
 
     private void registerUser(final String name, String email, final String phone, final String password, final String address) {
 
+        ProgressDialog pd= new ProgressDialog(this);
+        pd.setMessage("login...");
+        pd.setCancelable(false);
+        pd.show();
         mAuth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -192,7 +198,10 @@ public class RegisterAcitvity extends AppCompatActivity {
         else {
             //     progressDialog.setMessage("Logging...");
             // progressDialog.show();
-
+            ProgressDialog pd= new ProgressDialog(this);
+            pd.setMessage("login...");
+            pd.setCancelable(false);
+            pd.show();
             mAuth.signInWithEmailAndPassword(username, pass)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
