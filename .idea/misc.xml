@@ -3,7 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_add_medicine.xml" value="0.2638888888888889" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_add_prescription.xml" value="0.25885416666666666" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_login.xml" value="0.25885416666666666" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_monthly_report.xml" value="0.27291666666666664" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_prescription.xml" value="0.25885416666666666" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/activity_register_acitvity.xml" value="0.27291666666666664" />
         <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/fragment_add_medicine.xml" value="0.27291666666666664" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/layout/row_image.xml" value="0.27291666666666664" />
+        <entry key="..\:/GDSC_projects/Medicine-Reminder-App/app/src/main/res/menu/medicine_menu.xml" value="0.14270833333333333" />
       </map>
     </option>
   </component>

@@ -2,6 +2,8 @@ package com.gautam.medicinetime.medicine;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.gautam.medicinetime.PrescriptionActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -127,6 +129,10 @@ public class MedicineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_stats) {
             Intent intent = new Intent(this, MonthlyReportActivity.class);
+            startActivity(intent);
+        }
+        if(item.getItemId() == R.id.menu_prescription) {
+            Intent intent = new Intent(this, PrescriptionActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

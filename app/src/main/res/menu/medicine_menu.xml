@@ -6,4 +6,10 @@
         android:title="@string/menu_stats"
         android:icon="@drawable/ic_statistics"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_prescription"
+        android:title="@string/menu_stats"
+        android:icon="@drawable/ic_image"
+        android:iconTint="#fff"
+        app:showAsAction="ifRoom" />
 </menu>
